@@ -1,0 +1,82 @@
+data:
+  file_pattern: "data/data_confidence_*.csv"
+  target_col: "FORMATTED_ENTRY"      # 终馏点标签列
+  product_col: "PRODUCT"             # 产品类型列（用于分组）
+  bad_value_threshold: -50.0         # DCS坏值阈值，低于此视为缺失
+  separator: "\t"                    # 制表符分隔
+
+preprocessing:
+  outlier_method: "iqr"              # iqr | isolation_forest | zscore
+  outlier_iqr_factor: 3.0
+  outlier_zscore_threshold: 4.0
+  impute_method: "median"            # median | mean | knn
+  variance_threshold: 0.001          # 方差过低则过滤
+  correlation_threshold: 0.97        # 相关系数过高则删除冗余列
+
+feature_selection:
+  method: "combined"                 # pls_vip | tree_importance | combined
+  pls_n_components: 15
+  pls_vip_threshold: 1.0
+  top_k_features: 30                 # 最终保留特征数
+  add_rolling_features: true
+  rolling_windows: [3, 6, 12]        # 滑动窗口步数
+
+models:
+  pls:
+    enabled: true
+    n_components_range: [5, 8, 10, 12, 15]   # 交叉验证搜索
+  xgboost:
+    enabled: true
+    n_estimators: 500
+    max_depth: 5
+    learning_rate: 0.03
+    subsample: 0.8
+    colsample_bytree: 0.8
+    min_child_weight: 3
+    reg_alpha: 0.1
+    reg_lambda: 1.0
+    early_stopping_rounds: 50
+  lightgbm:
+    enabled: true
+    n_estimators: 500
+    max_depth: 5
+    learning_rate: 0.03
+    num_leaves: 31
+    subsample: 0.8
+    colsample_bytree: 0.8
+    min_child_samples: 10
+    reg_alpha: 0.1
+    reg_lambda: 1.0
+    early_stopping_rounds: 50
+  lstm:
+    enabled: true
+    sequence_length: 12              # 时序窗口（采样点数）
+    hidden_size: 64
+    num_layers: 2
+    dropout: 0.2
+    epochs: 100
+    batch_size: 32
+    learning_rate: 0.001
+    patience: 15                     # early stopping
+  ensemble:
+    enabled: true
+    method: "stacking"               # stacking | weighted_avg
+    meta_model: "ridge"
+
+training:
+  test_size: 0.2
+  n_splits: 5                        # TimeSeriesSplit折数
+  random_state: 42
+  product_group_train: null          # null = 不按产品分组；或指定值如 0
+
+evaluation:
+  metrics: ["rmse", "mae", "r2", "mape"]
+  plot_residuals: true
+  plot_feature_importance: true
+  plot_shap: true
+  confidence_interval: 0.95
+
+paths:
+  model_dir: "outputs/models"
+  figure_dir: "outputs/figures"
+  report_dir: "outputs/reports"

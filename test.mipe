@@ -1,0 +1,10 @@
+class emph = [color=green]
+
+
+Figure {
+    Previous_Step{
+        T A T A
+    }
+    Master
+}
+Figure.Previous_Step.T:emph
