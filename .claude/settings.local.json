@@ -1,7 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python -c ' *)"
+      "Bash(python -c ' *)",
+      "Bash(ssh -T git@github.com)",
+      "Bash(echo \"exit code: $?\")",
+      "Read(//c/Users/18270/.ssh/**)",
+      "Bash(ssh-add *)",
+      "Bash(ssh -vT git@github.com)",
+      "Bash(git remote *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }

@@ -6,7 +6,6 @@
 """
 from __future__ import annotations
 
-import glob
 import logging
 from pathlib import Path
 
@@ -20,20 +19,13 @@ def load_dataset(cfg: dict) -> tuple[pd.DataFrame, pd.Series, pd.Series | None]:
     """
     返回: X (特征), y (目标), product_series (产品标签，可为None)
     """
-    pattern = cfg["data"]["file_pattern"]
-    files = sorted(glob.glob(pattern))
-    if not files:
-        raise FileNotFoundError(f"未找到匹配文件: {pattern}")
+    file_path = cfg["data"]["file_path"]
+    if not Path(file_path).exists():
+        raise FileNotFoundError(f"未找到数据文件: {file_path}")
 
-    frames = []
-    for f in files:
-        sep = cfg["data"].get("separator", "\t")
-        df = pd.read_csv(f, sep=sep, encoding="utf-8-sig")
-        frames.append(df)
-        logger.info(f"加载文件: {f}  shape={df.shape}")
-
-    data = pd.concat(frames, ignore_index=True)
-    logger.info(f"合并后 shape={data.shape}")
+    sep = cfg["data"].get("separator", "\t")
+    data = pd.read_csv(file_path, sep=sep, encoding="utf-8-sig")
+    logger.info(f"加载文件: {file_path}  shape={data.shape}")
 
     target_col = cfg["data"]["target_col"]
     product_col = cfg["data"].get("product_col")

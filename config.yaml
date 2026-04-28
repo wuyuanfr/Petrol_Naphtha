@@ -1,5 +1,5 @@
 data:
-  file_pattern: "data/data_confidence_*.csv"
+  file_path: "data/data.csv"
   target_col: "FORMATTED_ENTRY"      # 终馏点标签列
   product_col: "PRODUCT"             # 产品类型列（用于分组）
   bad_value_threshold: -50.0         # DCS坏值阈值，低于此视为缺失
